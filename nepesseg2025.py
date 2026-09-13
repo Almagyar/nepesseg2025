@@ -1,3 +1,5 @@
+import msvcrt
+
 lakosok = []
 with open("lakossag_2025.csv", "r", encoding="utf-8") as forras:
     forras.readline()
@@ -12,28 +14,64 @@ with open("lakossag_2025.csv", "r", encoding="utf-8") as forras:
         }
         lakosok.append(lakos)
 
-print("[1]: Megye adatai \n [2]: Település típusai \n [X]: Kilépés")
-valasz = input("")
-
 def megyeadat(kod, lakosok):
     telepulesek_szama = 0
     osszes_lakos = 0
+    varos_lakossag = 0
     for telep in lakosok:
         if telep["megyekod"] == kod:
             telepulesek_szama += 1
+            osszes_lakos += telep["ferfi"]
+            osszes_lakos += telep["no"]
+            if telep["tipus"] == "város" or telep["tipus"] == "vármegyei jogú város" or telep["tipus"] == "vármegye székhely":
+                varos_lakossag += telep["no"]
+                varos_lakossag += telep["ferfi"]
+    osszes_lakos = f"{osszes_lakos:_}".replace("_", " ")
+    telepulesek_szama = f"{telepulesek_szama:_}".replace("_", " ")
+    varos_lakossag = f"{varos_lakossag:_}".replace("_", " ")
+    print()
     print(f"A települések száma a megyében: {telepulesek_szama}db")
-
-
-
-while True:
-    if valasz == "1":
+    print(f"Az összes lakos száma: {osszes_lakos}fő")
+    print(f"Városokban lakók száma: {varos_lakossag}fő")
+    print()
+    print("[1] Mégegy kód beírása \n[2] Vissza a menübe \n[X] Kilépés")
+    kilepes = False
+    vissza = msvcrt.getch().decode("utf-8", errors="ignore")
+    if vissza == "1":
         kod = input("Írja be a megye kódját: ").upper()
+        print()
         megyeadat(kod, lakosok)
-    elif valasz == "2":
-        print("b")
-        break
-    elif valasz == "x" or valasz == "X":
-        break
-    else:
-        print("Hibás bemenet")
-        break
+    elif vissza == "2":
+        print()
+        menu()
+    elif vissza == "x" or vissza == "X":
+        print("Kilépés...")
+        kilepes = True
+    return kilepes
+
+def telepules_adat():
+    pass
+
+def menu():
+    print("[1]: Megye adatai \n[2]: Település típusai \n[X]: Kilépés")
+    while True:
+        if msvcrt.kbhit():
+            betu = msvcrt.getch().decode("utf-8", errors="ignore")
+            if betu == "1":
+                kod = input("Írja be a megye kódját: ").upper()
+                if megyeadat(kod, lakosok) == True:
+                    break
+            elif betu == "2":
+                print()
+                print("[a]: Megye adatai \n[b]: Település típusai")
+                if msvcrt.kbhit():
+                    betu2 = msvcrt.getch().decode("utf-8", errors="ignore")
+                    telepules_adat()
+            elif betu == "x" or betu == "X":
+                print("Kilépés...")
+                break
+            else:
+                print(f"{"\033[31m"}Hibás bemenet!{"\033[0m"}")
+                menu()
+
+menu()

@@ -34,7 +34,7 @@ def megyeadat(kod, lakosok):
     print(f"Az összes lakos száma: {osszes_lakos}fő")
     print(f"Városokban lakók száma: {varos_lakossag}fő")
     print()
-    print("[1] Mégegy kód beírása \n[2] Vissza a menübe \n[X] Kilépés")
+    print("[1] Még egy kód beírása \n[2] Vissza a menübe \n[X] Kilépés")
     kilepes = False
     vissza = msvcrt.getch().decode("utf-8", errors="ignore")
     if vissza == "1":
@@ -49,8 +49,16 @@ def megyeadat(kod, lakosok):
         kilepes = True
     return kilepes
 
-def telepules_adat():
-    pass
+def telepules_adat_kozseg(lakosok):
+    kozsegek = []
+    for kozseg in lakosok:
+        if kozseg["tipus"] == "község" or kozseg["tipus"] == "nagyközség":
+            kozsegek.append(kozseg["telepules"] ,kozseg["ferfi"] ,kozseg["no"])      
+    print(kozsegek)
+
+def telepules_adat_varos(lakosok):
+    varos = []
+
 
 def menu():
     print("[1]: Megye adatai \n[2]: Település típusai \n[X]: Kilépés")
@@ -63,15 +71,17 @@ def menu():
                     break
             elif betu == "2":
                 print()
-                print("[a]: Megye adatai \n[b]: Település típusai")
-                if msvcrt.kbhit():
-                    betu2 = msvcrt.getch().decode("utf-8", errors="ignore")
-                    telepules_adat()
+                print("Írja be a kívánt település típusának betűjelét!: \n[a]: Község \n[b]: Város")
+                betu2 = msvcrt.getch().decode("utf-8", errors="ignore")
+                if betu2 == "a":
+                    telepules_adat_kozseg(lakosok)
+                if betu2 == "b":
+                    telepules_adat_varos(lakosok)
             elif betu == "x" or betu == "X":
                 print("Kilépés...")
                 break
             else:
-                print(f"{"\033[31m"}Hibás bemenet!{"\033[0m"}")
+                print(f"{"\033[31m"}Hibás bemenet! Kilépés a főmenübe...{"\033[0m"}")
                 menu()
 
 menu()

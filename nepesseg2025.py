@@ -107,7 +107,7 @@ def telepules_adat_varos(lakosok):
 
 
 def menu():
-    print("[1]: Megye adatai \n[2]: Település típusai \n[X]: Kilépés")
+    print("Üdvözöljük a lakossági mutatón! Kérjük vaálasszon az alábbi opciók közül!: \n[1]: Megye adatai \n[2]: Település típusai \n[X]: Kilépés")
     while True:
         if msvcrt.kbhit():
             betu = msvcrt.getch().decode("utf-8", errors="ignore")

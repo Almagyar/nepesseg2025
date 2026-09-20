@@ -25,9 +25,10 @@ def megyeadat(kod, lakosok):
             telepulesek_szama += 1
             osszes_lakos += telep["ferfi"]
             osszes_lakos += telep["no"]
-            if telep["tipus"] == "város" or telep["tipus"] == "vármegyei jogú város" or telep["tipus"] == "vármegye székhely":
+            if telep["tipus"] == "város" or telep["tipus"] == "vármegyei jogú város" or telep["tipus"] == "vármegye székhely" or telep["tipus"] == "fővárosi kerület":
                 varos_lakossag += telep["no"]
                 varos_lakossag += telep["ferfi"]
+
     osszes_lakos = f"{osszes_lakos:_}".replace("_", " ")
     telepulesek_szama = f"{telepulesek_szama:_}".replace("_", " ")
     varos_lakossag = f"{varos_lakossag:_}".replace("_", " ")
@@ -97,7 +98,7 @@ def telepules_adat_kozseg(lakosok):
 def telepules_adat_varos(lakosok):
     varosok = []
     for adat in lakosok:
-        if adat["tipus"] == "város" or adat["tipus"] == "vármegyei jogú város" or adat["tipus"] == "vármegye székhely":
+        if adat["tipus"] == "város" or adat["tipus"] == "vármegyei jogú város" or adat["tipus"] == "vármegye székhely" or adat["tipus"] == "fővárosi kerület":
             varos = {
                 "telepules" : adat["telepules"],
                 "lakosszam": adat["ferfi"] + adat["no"]
@@ -112,7 +113,7 @@ def menu():
         if msvcrt.kbhit():
             betu = msvcrt.getch().decode("utf-8", errors="ignore")
             if betu == "1":
-                kod = input("Írja be a megye kódját: ").upper()
+                kod = input("Írja be a megye kódját(pl.: CSO = Csongrád-Csanád): ").upper()
                 if megyeadat(kod, lakosok) == True:
                     break
             elif betu == "2":

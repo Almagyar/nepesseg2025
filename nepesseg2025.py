@@ -59,29 +59,32 @@ def lista_kiirasa(lista, oldal_elemek_szama=20):
 
     összes_oldal = math.ceil(összes_elem / oldal_elemek_szama)
     aktualis_oldal = 1
-
-    start_i = (aktualis_oldal - 1) * oldal_elemek_szama
-    end_i = start_i + oldal_elemek_szama
-    oldal_elemei = lista[start_i:end_i]
-    print(f"\n--- {aktualis_oldal}. oldal / {összes_oldal} (Elemek: {start_i + 1}-{min(end_i, összes_elem)}) ---")
-    for i, elem in enumerate(oldal_elemei, start=start_i + 1):
-        print(f"{i}. {elem["telepules"]}       lakosok száma: {elem["lakosszam"]} fő")
+    kilepes = False
 
     while True:
+        start_i = (aktualis_oldal - 1) * oldal_elemek_szama
+        end_i = start_i + oldal_elemek_szama
+        oldal_elemei = lista[start_i:end_i]
+        print(f"\n--- {aktualis_oldal}. oldal / {összes_oldal} (Elemek: {start_i + 1}-{min(end_i, összes_elem)}) ---")
+
+        for i, elem in enumerate(oldal_elemei, start=start_i + 1):
+            print(f"{i}. {elem["telepules"]} lakosok száma: {elem["lakosszam"]} fő")
+
         print("-" * 40)
         bemenet = input(f"Írj be egy oldalszámot (1-{összes_oldal}), vagy X-et a kilépéshez: ").strip().lower()
         if bemenet == 'x' or bemenet == "X":
-                print("Kilépés...")
-                break
+            print("Kilépés...")
+            kilepes = True
+            return kilepes
             
         if bemenet.isdigit():
             valasztott_oldal = int(bemenet)
             if 1 <= valasztott_oldal <= összes_oldal:
                 aktualis_oldal = valasztott_oldal
             else:
-                print(f" Érvénytelen oldalszám, 1 és {összes_oldal} között adj meg számot.")
+                print(f"{"\033[31m"} Érvénytelen oldalszám, 1 és {összes_oldal} között adj meg számot.{"\033[0m"}")
         else:
-            print("Számot adj meg, vagy X-et a kilépéshez!")
+            print(f"{"\033[31m"}Számot adj meg, vagy X-et a kilépéshez{"\033[0m"}!")
 
 
 def telepules_adat_kozseg(lakosok):
@@ -93,7 +96,9 @@ def telepules_adat_kozseg(lakosok):
                 "lakosszam": adat["ferfi"] + adat["no"]
             }
             kozsegek.append(kozseg)
-    lista_kiirasa(kozsegek)
+    if lista_kiirasa(kozsegek) == True:
+        return True
+
 
 def telepules_adat_varos(lakosok):
     varosok = []
@@ -104,11 +109,12 @@ def telepules_adat_varos(lakosok):
                 "lakosszam": adat["ferfi"] + adat["no"]
             }
             varosok.append(varos)
-    lista_kiirasa(varosok)
+    if lista_kiirasa(varosok) == True:
+        return True
 
 
 def menu():
-    print("Üdvözöljük a lakossági mutatón! Kérjük vaálasszon az alábbi opciók közül!: \n[1]: Megye adatai \n[2]: Település típusai \n[X]: Kilépés")
+    print("Üdvözöljük a lakossági mutatón! Kérjük válasszon az alábbi opciók közül!: \n[1]: Megye adatai \n[2]: Település típusai \n[X]: Kilépés")
     while True:
         if msvcrt.kbhit():
             betu = msvcrt.getch().decode("utf-8", errors="ignore")
@@ -121,9 +127,11 @@ def menu():
                 print("Írja be a kívánt település típusának betűjelét!: \n[a]: Község \n[b]: Város")
                 betu2 = msvcrt.getch().decode("utf-8", errors="ignore")
                 if betu2 == "a":
-                    telepules_adat_kozseg(lakosok)
+                    if telepules_adat_kozseg(lakosok) == True:
+                        break
                 if betu2 == "b":
-                    telepules_adat_varos(lakosok)
+                    if telepules_adat_varos(lakosok) == True:
+                        break
             elif betu == "x" or betu == "X":
                 print("Kilépés...")
                 break

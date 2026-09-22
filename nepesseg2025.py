@@ -16,46 +16,42 @@ with open("lakossag_2025.csv", "r", encoding="utf-8") as forras:
         lakosok.append(lakos)
 
 def megyeadat(kod, lakosok):
-    while True:
-        telepulesek_szama = 0
-        osszes_lakos = 0
-        varos_lakossag = 0
-        for telep in lakosok:
-            if telep["megyekod"] == kod:
-                telepulesek_szama += 1
-                osszes_lakos += telep["ferfi"]
-                osszes_lakos += telep["no"]
-                if telep["tipus"] == "város" or telep["tipus"] == "vármegyei jogú város" or telep["tipus"] == "vármegye székhely" or telep["tipus"] == "fővárosi kerület":
-                    varos_lakossag += telep["no"]
-                    varos_lakossag += telep["ferfi"]
-        osszes_lakos = f"{osszes_lakos:_}".replace("_", " ")
-        telepulesek_szama = f"{telepulesek_szama:_}".replace("_", " ")
-        varos_lakossag = f"{varos_lakossag:_}".replace("_", " ")
+    telepulesek_szama = 0
+    osszes_lakos = 0
+    varos_lakossag = 0
+
+    for telep in lakosok:
+        if telep["megyekod"] == kod:
+            telepulesek_szama += 1
+            osszes_lakos += telep["ferfi"]
+            osszes_lakos += telep["no"]
+            if telep["tipus"] == "város" or telep["tipus"] == "vármegyei jogú város" or telep["tipus"] == "vármegye székhely" or telep["tipus"] == "fővárosi kerület":
+                varos_lakossag += telep["no"]
+                varos_lakossag += telep["ferfi"]
+
+    osszes_lakos = f"{osszes_lakos:_}".replace("_", " ")
+    telepulesek_szama = f"{telepulesek_szama:_}".replace("_", " ")
+    varos_lakossag = f"{varos_lakossag:_}".replace("_", " ")
+    print()
+    print(f"A települések száma a megyében: {telepulesek_szama}db")
+    print(f"Az összes lakos száma: {osszes_lakos}fő")
+    print(f"Városokban lakók száma: {varos_lakossag}fő")
+    print()
+    print("[1] Még egy kód beírása \n[2] Vissza a menübe \n[X] Kilépés")
+
+    kilepes = False
+    vissza = msvcrt.getch().decode("utf-8", errors="ignore")
+    if vissza == "1":
+        kod = input("Írja be a megye kódját: ").upper()
         print()
-        if osszes_lakos != "0":
-            print(f"A települések száma a megyében: {telepulesek_szama}db")
-            print(f"Az összes lakos száma: {osszes_lakos}fő")
-
-            if osszes_lakos == varos_lakossag:
-                print("Csak városok találhatóak az adott területen.")
-            else:
-                print(f"Városokban lakók száma: {varos_lakossag}fő")
-            print()
-        else:
-            print(f"{"\033[31m"}Nem található ilyen megyekód{"\033[0m"}")
-        print("[1] Még egy kód beírása \n[2] Vissza a menübe \n[X] Kilépés")
-
-        vissza = msvcrt.getch().decode("utf-8", errors="ignore")
-        if vissza == "1":
-            kod = input("Írja be a megye kódját: ").upper()
-            print()
-            continue
-        elif vissza == "2":
-            print()
-            return
-        elif vissza == "x" or vissza == "X":
-            print("Kilépés...")
-            return True
+        megyeadat(kod, lakosok)
+    elif vissza == "2":
+        print()
+        menu()
+    elif vissza == "x" or vissza == "X":
+        print("Kilépés...")
+        kilepes = True
+    return kilepes
 
 
 def lista_kiirasa(lista, oldal_elemek_szama=20):
@@ -63,6 +59,7 @@ def lista_kiirasa(lista, oldal_elemek_szama=20):
 
     összes_oldal = math.ceil(összes_elem / oldal_elemek_szama)
     aktualis_oldal = 1
+    kilepes = False
 
     while True:
         start_i = (aktualis_oldal - 1) * oldal_elemek_szama
@@ -71,12 +68,14 @@ def lista_kiirasa(lista, oldal_elemek_szama=20):
         print(f"\n--- {aktualis_oldal}. oldal / {összes_oldal} (Elemek: {start_i + 1}-{min(end_i, összes_elem)}) ---")
 
         for i, elem in enumerate(oldal_elemei, start=start_i + 1):
-            print(f"{str(f"{i}.").ljust(5)} {str(elem["telepules"]).ljust(20)} lakosok száma: {elem["lakosszam"]} fő")
+            print(f"{i}. {elem["telepules"]}, lakosok száma: {elem["lakosszam"]} fő")
 
         print("-" * 40)
-        bemenet = input(f"Írj be egy oldalszámot (1-{összes_oldal}), vagy X-et a kilépéshez a főmenübe: ").strip().lower()
+        bemenet = input(f"Írj be egy oldalszámot (1-{összes_oldal}), vagy X-et a kilépéshez: ").strip().lower()
         if bemenet == 'x' or bemenet == "X":
-            return
+            print("Kilépés...")
+            kilepes = True
+            return kilepes
             
         if bemenet.isdigit():
             valasztott_oldal = int(bemenet)
@@ -123,23 +122,21 @@ def menu():
                 kod = input("Írja be a megye kódját(pl.: CSO = Csongrád-Csanád): ").upper()
                 if megyeadat(kod, lakosok) == True:
                     break
-                else:
-                    print("Kérjük válasszon az alábbi opciók közül!: \n[1]: Megye adatai \n[2]: Település típusai \n[X]: Kilépés")
             elif betu == "2":
                 print()
                 print("Írja be a kívánt település típusának betűjelét!: \n[a]: Község \n[b]: Város")
                 betu2 = msvcrt.getch().decode("utf-8", errors="ignore")
                 if betu2 == "a":
-                    telepules_adat_kozseg(lakosok)
-                    print("Kérjük válasszon az alábbi opciók közül!: \n[1]: Megye adatai \n[2]: Település típusai \n[X]: Kilépés")
+                    if telepules_adat_kozseg(lakosok) == True:
+                        break
                 if betu2 == "b":
-                    telepules_adat_varos(lakosok)
-                    print("Kérjük válasszon az alábbi opciók közül!: \n[1]: Megye adatai \n[2]: Település típusai \n[X]: Kilépés")
+                    if telepules_adat_varos(lakosok) == True:
+                        break
             elif betu == "x" or betu == "X":
                 print("Kilépés...")
                 break
             else:
-                print(f"{"\033[31m"}Hibás bemenet! Nyomjon meg egy érvényes gombot.{"\033[0m"}")
-                continue
+                print(f"{"\033[31m"}Hibás bemenet! Kilépés a főmenübe...{"\033[0m"}")
+                menu()
 
 menu()
